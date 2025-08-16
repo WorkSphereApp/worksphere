@@ -1,10 +1,17 @@
 import express from "express";
-import Razorpay from "razorpay";
 import cors from "cors";
+import dotenv from "dotenv";
 
+dotenv.config();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
+
+// Root route just to check backend is alive
+app.get("/", (req, res) => {
+  res.send("✅ WorkSphere Backend is running!");
+});
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -25,8 +32,7 @@ app.post("/create-order", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
