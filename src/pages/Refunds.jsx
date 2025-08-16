@@ -11,7 +11,7 @@ export default function Refunds() {
       </p>
       <p>
         If you experience technical issues, we are happy to assist. Please
-        contact us at <strong>support@worksphereapp.com</strong>.
+        contact us at <strong>dhanasekaransjh6@gmail.com</strong>.
       </p>
     </div>
   );

@@ -20,7 +20,7 @@ export default function Home() {
     const res = await fetch("/api/payment/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: 50000 }), // ₹500
+      body: JSON.stringify({ amount: 1000000 }),
     });
 
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
@@ -28,7 +28,7 @@ export default function Home() {
     const data = await res.json();
 
     const options = {
-  key: import.meta.env.VITE_RAZORPAY_KEY_ID, // ✅ comes from .env
+  key: import.meta.env.VITE_RAZORPAY_KEY_ID,
   amount: data.amount,
   currency: data.currency,
   name: "WorkSphere",
@@ -60,29 +60,18 @@ export default function Home() {
   return (
     <div className="font-sans bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
       {/* HEADER */}
-      <header className="w-full p-6 shadow bg-white dark:bg-gray-900 flex justify-between items-center sticky top-0 z-50">
-        <h1 className="text-2xl text-blue-500">All-in-one Staff and Task Management</h1>
+      <header className="w-full p-4 shadow bg-white dark:bg-gray-900 flex justify-between items-center sticky top-0 z-50">
+        <h1 className="text-2xl text-black-500">All-in-one Staff and Task Management</h1>
         <nav className="space-x-6 text-sm font-medium">
-          {[
-            "intro",
-            "register",
-            "dashboard",
-            "staff",
-            "attendance",
-            "tasks",
-            "reminders",
-            "pricing",
-            "download",
-            "faq",
-          ].map((link) => (
-            <a
-              key={link}
-              href={`#${link}`}
-              className="hover:text-blue-600 transition-colors"
-            >
-              {link.charAt(0).toUpperCase() + link.slice(1)}
-            </a>
-          ))}
+          {["intro", "register", "dashboard", "pricing", "download", "faq"].map((link) => (
+  <a
+    key={link}
+    href={`#${link}`}
+    className="hover:text-blue-600 transition-colors"
+  >
+    {link.charAt(0).toUpperCase() + link.slice(1)}
+  </a>
+))}
         </nav>
       </header>
 

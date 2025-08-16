@@ -21,7 +21,7 @@ export default function Terms() {
       </ul>
       <p>
         For any clarifications, contact{" "}
-        <strong>support@worksphereapp.com</strong>.
+        <strong>dhanasekaransjh6@gmail.com</strong>.
       </p>
     </div>
   );

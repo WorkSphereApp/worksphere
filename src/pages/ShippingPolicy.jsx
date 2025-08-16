@@ -11,7 +11,7 @@ export default function ShippingPolicy() {
       </p>
       <p>
         If you face issues accessing your account after purchase, please contact
-        us at <strong>support@worksphereapp.com</strong>.
+        us at <strong>dhanasekaransjh6@gmail.com</strong>.
       </p>
     </div>
   );
