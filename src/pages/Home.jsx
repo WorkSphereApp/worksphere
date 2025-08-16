@@ -14,42 +14,38 @@ import wareminder from "../assets/wareminder.png";
 const sectionImageClass = "rounded shadow-lg mb-6 object-contain mx-auto";
 const imageSizeClass = "max-w-[1000px] w-full max-h-[600px] h-auto";
 
-export default function LandingPage() {
+export default function Home() {
   const handlePayment = async () => {
-    try {
-      const orderData = await fetch("http://localhost:5000/api/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      }).then((res) => res.json());
+  try {
+    const res = await fetch("/api/payment/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: 50000 }), // ₹500
+    });
 
-      const options = {
-        key: "R22BbMB6v7E8Om",
-        amount: orderData.amount,
-        currency: "INR",
-        name: "WorkSphere",
-        description: "Lifetime Access",
-        image: "/vite.svg",
-        order_id: orderData.id,
-        handler: (response) =>
-          alert(`Payment Successful! ID: ${response.razorpay_payment_id}`),
-        prefill: {
-          name: "Your Name",
-          email: "you@example.com",
-          contact: "1111111111",
-        },
-        theme: { color: "#2563eb" },
-      };
+    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
-      const rzp = new window.Razorpay(options);
-      rzp.on("payment.failed", () => {
-        alert("Oops! Payment Failed. Please try again.");
-      });
-      rzp.open();
-    } catch (err) {
-      console.error("Payment Error:", err);
-      alert("Error creating payment order.");
-    }
-  };
+    const data = await res.json();
+
+    const options = {
+  key: import.meta.env.VITE_RAZORPAY_KEY_ID, // ✅ comes from .env
+  amount: data.amount,
+  currency: data.currency,
+  name: "WorkSphere",
+  description: "Test Transaction",
+  order_id: data.id,
+  handler: function (response) {
+    alert(`Payment successful! ID: ${response.razorpay_payment_id}`);
+  },
+};
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    console.error("Payment Error:", err);
+    alert("Error creating payment order.");
+  }
+};
 
   const Section = ({ id, title, emoji, description, children }) => (
     <section id={id} className="max-w-5xl mx-auto px-6 py-4">
@@ -77,7 +73,6 @@ export default function LandingPage() {
             "reminders",
             "pricing",
             "download",
-            "contact",
             "faq",
           ].map((link) => (
             <a
@@ -271,10 +266,7 @@ export default function LandingPage() {
         <p className="mb-6 text-center">₹10,000 one-time payment per firm</p>
         <button
           onClick={handlePayment}
-          className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2 mx-auto"
-        >
-          💳 Pay ₹10,000 — Lifetime Access
-        </button>
+          className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2 mx-auto">💳 Pay ₹10,000 — Lifetime Access</button>
         <p className="mt-3 text-sm text-center text-gray-500">
           * Secure payments powered by Razorpay
         </p>
@@ -296,23 +288,6 @@ export default function LandingPage() {
         </p>
       </Section>
 
-      {/* CONTACT */}
-      <Section
-        id="contact"
-        title="Contact Us"
-        emoji="📞"
-        description="Need help or have questions? Our team is here to assist you."
-      >
-        <p>
-          Email:{" "}
-          <a
-            href="mailto:support@worksphereapp.com"
-            className="underline text-blue-500"
-          >
-            support@worksphereapp.com
-          </a>
-        </p>
-      </Section>
 
       {/* FAQ */}
       <Section id="faq" title="FAQ" emoji="❓">
@@ -333,16 +308,6 @@ export default function LandingPage() {
           </li>
         </ul>
       </Section>
-
-      {/* FOOTER */}
-      <footer className="bg-gray-100 dark:bg-gray-800 py-6 text-center text-sm text-gray-600 dark:text-gray-300">
-        <p>
-          &copy; {new Date().getFullYear()} WorkSphere App. All rights reserved.
-        </p>
-        <p className="text-blue-600 underline">
-          Email: support@worksphereapp.com
-        </p>
-      </footer>
     </div>
   );
 }
