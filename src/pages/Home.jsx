@@ -61,7 +61,7 @@ export default function Home() {
     <div className="font-sans bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
       {/* HEADER */}
       <header className="w-full p-6 shadow bg-white dark:bg-gray-900 flex justify-between items-center sticky top-0 z-50">
-        <h1 className="text-2xl font-bold text-blue-700">WorkSphere</h1>
+        <h1 className="text-2xl text-blue-500">All-in-one Staff and Task Management</h1>
         <nav className="space-x-6 text-sm font-medium">
           {[
             "intro",
