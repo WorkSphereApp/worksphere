@@ -16,6 +16,22 @@ const imageSizeClass = "max-w-[1000px] w-full max-h-[600px] h-auto";
 
 export default function Home() {
   const handlePayment = async () => {
+
+handler: async function (response) {
+  const verifyRes = await fetch("/api/payment/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(response),
+  });
+  const verifyData = await verifyRes.json();
+
+  if (verifyData.success) {
+    alert("✅ Payment verified! You can now download the app.");
+  } else {
+    alert("❌ Payment verification failed.");
+  }
+}
+
   try {
     const res = await fetch("/api/payment/order", {
       method: "POST",
@@ -38,7 +54,6 @@ export default function Home() {
     alert(`Payment successful! ID: ${response.razorpay_payment_id}`);
   },
 };
-
     const rzp = new window.Razorpay(options);
     rzp.open();
   } catch (err) {
@@ -46,6 +61,14 @@ export default function Home() {
     alert("Error creating payment order.");
   }
 };
+
+// example in Node backend
+const { data, error } = await supabase
+  .storage
+  .from("downloads")
+  .createSignedUrl("app.apk", 600); // valid 10 min
+
+res.json({ url: data.signedUrl });
 
   const Section = ({ id, title, emoji, description, children }) => (
     <section id={id} className="max-w-5xl mx-auto px-6 py-4">
@@ -63,7 +86,14 @@ export default function Home() {
       <header className="w-full p-4 shadow bg-white dark:bg-gray-900 flex justify-between items-center sticky top-0 z-50">
         <h1 className="text-2xl text-black-500">All-in-one Staff and Task Management</h1>
         <nav className="space-x-6 text-sm font-medium">
-          {["intro", "register", "dashboard", "pricing", "download", "faq"].map((link) => (
+  {[
+  "intro",
+  "register",
+  "dashboard",
+  "pricing",
+  "download",
+  "faq",
+].map((link) => (
   <a
     key={link}
     href={`#${link}`}
@@ -72,7 +102,7 @@ export default function Home() {
     {link.charAt(0).toUpperCase() + link.slice(1)}
   </a>
 ))}
-        </nav>
+</nav>
       </header>
 
       {/* INTRO */}
@@ -269,8 +299,40 @@ export default function Home() {
         description="WorkSphere runs on Android, Windows, and Web — access your workspace from anywhere."
       >
         <ul className="list-disc ml-6 mb-4">
-          <li>📱 Android APK</li>
-          <li>🖥️ Windows EXE</li>
+          <li>
+  <button
+    onClick={async () => {
+      try {
+        const res = await fetch("/api/get-apk-url");
+        const { url } = await res.json();
+        if (url) window.location.href = url;
+        else alert("Download not available. Please complete payment first.");
+      } catch (err) {
+        alert("Error fetching APK download.");
+      }
+    }}
+    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+  >
+    📱 Download Android APK
+  </button>
+</li>
+<li>
+  <button
+    onClick={async () => {
+      try {
+        const res = await fetch("/api/get-pwa-access");
+        const { url } = await res.json();
+        if (url) window.location.href = url;
+        else alert("PWA access locked. Please complete payment first.");
+      } catch (err) {
+        alert("Error fetching PWA link.");
+      }
+    }}
+    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+  >
+    🌐 Open PWA (Web/Desktop/iOS)
+  </button>
+</li>
         </ul>
         <p className="italic text-yellow-500">
           Web version will be available only to paid firms.
