@@ -18,9 +18,9 @@ const supabase = createClient(
 );
 
 // ✅ Verify Razorpay payment
-app.post("/api/payment/verify", (req, res) => {
+app.post("/api/payment/verify", async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, firm_id } = req.body;
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
@@ -29,8 +29,28 @@ app.post("/api/payment/verify", (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      // ✅ Save payment to DB for firm, mark as paid
-      return res.json({ success: true, message: "Payment verified successfully" });
+      // Save to Supabase
+      const { error: insertErr } = await supabase
+        .from("firm_payments")
+        .insert([
+          {
+            firm_id,
+            order_id: razorpay_order_id,
+            payment_id: razorpay_payment_id,
+            signature: razorpay_signature,
+            amount: 1000000,
+          },
+        ]);
+
+      if (insertErr) throw insertErr;
+
+      // Mark firm as paid
+      await supabase
+        .from("firms")
+        .update({ paid: true })
+        .eq("id", firm_id);
+
+      return res.json({ success: true, message: "Payment verified & firm marked paid" });
     } else {
       return res.status(400).json({ success: false, message: "Invalid signature" });
     }
@@ -39,19 +59,23 @@ app.post("/api/payment/verify", (req, res) => {
   }
 });
 
-
 app.get("/api/get-apk-url", async (req, res) => {
   try {
-    // 🔒 Example: Replace with real DB lookup
-    const firmPaid = true; // fetch from DB using firm_id from auth/session
+    const firm_id = req.query.firm_id; // you’ll pass this from frontend
 
-    if (!firmPaid) {
+    const { data: firm } = await supabase
+      .from("firms")
+      .select("paid")
+      .eq("id", firm_id)
+      .single();
+
+    if (!firm?.paid) {
       return res.status(403).json({ error: "Access denied. Please complete payment." });
     }
 
     const { data, error } = await supabase.storage
       .from("downloads")
-      .createSignedUrl("app.apk", 600);
+      .createSignedUrl("WorkSphere.apk", 600);
 
     if (error) throw error;
 
@@ -83,22 +107,6 @@ app.post("/api/payment/order", async (req, res) => {
     };
     const order = await razorpay.orders.create(options);
     res.json(order);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ✅ Secure APK download route
-app.get("/api/get-apk-url", async (req, res) => {
-  try {
-    // (Later: verify payment success here before issuing signed URL!)
-    const { data, error } = await supabase.storage
-      .from("worksphere")
-      .createSignedUrl("WorkSphere.apk", 600); // 10 minutes
-
-    if (error) throw error;
-
-    res.json({ url: data.signedUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

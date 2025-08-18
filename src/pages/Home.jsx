@@ -15,45 +15,59 @@ const sectionImageClass = "rounded shadow-lg mb-6 object-contain mx-auto";
 const imageSizeClass = "max-w-[1000px] w-full max-h-[600px] h-auto";
 
 export default function Home() {
-  const handlePayment = async () => {
-
-handler: async function (response) {
-  const verifyRes = await fetch("/api/payment/verify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(response),
-  });
-  const verifyData = await verifyRes.json();
-
-  if (verifyData.success) {
-    alert("✅ Payment verified! You can now download the app.");
-  } else {
-    alert("❌ Payment verification failed.");
-  }
-}
-
+const handlePayment = async () => {
   try {
+    // 1. Create order
     const res = await fetch("/api/payment/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: 1000000 }),
+      body: JSON.stringify({ amount: 1000000 }), // ₹10,000
     });
 
     if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
     const data = await res.json();
 
+    // 2. Razorpay checkout
     const options = {
-  key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-  amount: data.amount,
-  currency: data.currency,
-  name: "WorkSphere",
-  description: "Test Transaction",
-  order_id: data.id,
-  handler: function (response) {
-    alert(`Payment successful! ID: ${response.razorpay_payment_id}`);
-  },
-};
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      name: "WorkSphere",
+      description: "Lifetime Access",
+      order_id: data.id,
+      handler: async function (response) {
+        try {
+          // 3. Verify payment
+          const verifyRes = await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response),
+          });
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.success) {
+            alert("✅ Payment verified! Download starting...");
+
+            // 4. Fetch signed APK download link
+            const firmId = sessionStorage.getItem("firm_id");
+            const apkRes = await fetch(`/api/get-apk-url?firm_id=${firmId}`);
+            const apkData = await apkRes.json();
+
+            if (apkData.url) {
+              window.location.href = apkData.url; // trigger download
+            } else {
+              alert("❌ Could not get download link.");
+            }
+          } else {
+            alert("❌ Payment verification failed.");
+          }
+        } catch (err) {
+          console.error("Verify Error:", err);
+          alert("Error verifying payment.");
+        }
+      },
+    };
+
     const rzp = new window.Razorpay(options);
     rzp.open();
   } catch (err) {
@@ -62,15 +76,7 @@ handler: async function (response) {
   }
 };
 
-// example in Node backend
-const { data, error } = await supabase
-  .storage
-  .from("downloads")
-  .createSignedUrl("app.apk", 600); // valid 10 min
-
-res.json({ url: data.signedUrl });
-
-  const Section = ({ id, title, emoji, description, children }) => (
+ const Section = ({ id, title, emoji, description, children }) => (
     <section id={id} className="max-w-5xl mx-auto px-6 py-4">
       <h2 className="text-2xl font-bold mb-2">
         {emoji} {title}
