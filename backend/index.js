@@ -92,18 +92,18 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Create Razorpay Order
-// backend/index.js
 app.post("/api/payment/order", async (req, res) => {
   try {
     const { firm_id } = req.body;
     const options = {
-      amount: 1000000, // fixed ₹10,000 in paise
+      amount: 1000000,
       currency: "INR",
       receipt: `receipt_${firm_id}_${Date.now()}`
     };
     const order = await razorpay.orders.create(options);
     res.json(order);
   } catch (err) {
+    console.error("Order creation error:", err); // 👈 add this
     res.status(500).json({ error: err.message });
   }
 });
