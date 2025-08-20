@@ -92,13 +92,14 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Create Razorpay Order
+// backend/index.js
 app.post("/api/payment/order", async (req, res) => {
   try {
-    const { amount } = req.body; // INR in paise, e.g., 1000000 = ₹10,000
+    const { firm_id } = req.body;
     const options = {
-      amount,
+      amount: 1000000, // fixed ₹10,000 in paise
       currency: "INR",
-      receipt: "receipt_" + Date.now(),
+      receipt: `receipt_${firm_id}_${Date.now()}`
     };
     const order = await razorpay.orders.create(options);
     res.json(order);
@@ -106,7 +107,6 @@ app.post("/api/payment/order", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // ✅ Secure PWA access route
 app.get("/api/get-pwa-access", async (req, res) => {

@@ -299,8 +299,8 @@ const handleDownload = async () => {
         return;
       }
 
-      const res = await fetch(`/api/get-apk-url?firm_id=${firmId}`);
-      const { url } = await res.json();
+      const res = await apiFetch(`/api/get-apk-url?firm_id=${firmId}`);
+      const { url } = res;
 
       if (url) {
         window.location.href = url; // secure download
@@ -321,8 +321,8 @@ const handleDownload = async () => {
   <button
     onClick={async () => {
       try {
-        const res = await fetch("/api/get-pwa-access");
-        const { url } = await res.json();
+        const res = await apiFetch(`/api/get-pwa-access?firm_id=${firmId}`);
+	const { url } = res;
         if (url) window.location.href = url;
         else alert("PWA access locked. Please complete payment first.");
       } catch (err) {
