@@ -1,15 +1,10 @@
+// src/pages/AppRegistration.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { loginAndFetchFirm } from "../utils/authUtils";
 
 export default function AppRegistration() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
     firmName: "",
     email: "",
@@ -39,7 +34,7 @@ export default function AppRegistration() {
     setLoading(true);
 
     try {
-      // 1️⃣ Register the firm
+      // 1️⃣ Register firm via Edge Function
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/register-firm`,
         {
@@ -71,38 +66,10 @@ export default function AppRegistration() {
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Unknown error");
+      if (!res.ok) throw new Error(data.error || "Registration failed");
 
-      // 2️⃣ Auto-login with Supabase Auth
-      const { data: authData, error: authError } =
-        await supabase.auth.signInWithPassword({
-          email: form.email,
-          password: form.password,
-        });
-
-      if (authError) throw new Error(authError.message);
-
-      const user = authData.user;
-      if (!user) throw new Error("Login failed after registration");
-
-      // 3️⃣ Call login-firm Edge Function
-      const firmRes = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/login-firm`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ auth_id: user.id }),
-        }
-      );
-
-      const firmData = await firmRes.json();
-      if (!firmRes.ok || !firmData.success) {
-        throw new Error(firmData.error || "Firm lookup failed");
-      }
-
-      // 4️⃣ Save session
-      sessionStorage.setItem("firm_id", firmData.firm_id);
-      sessionStorage.setItem("paid", firmData.paid);
+      // 2️⃣ Auto-login + fetch firm (reuses util)
+      await loginAndFetchFirm(form.email, form.password);
 
       setMessage("✅ Firm created & logged in! Redirecting...");
       setTimeout(() => navigate("/dashboard"), 2500);

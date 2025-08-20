@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
+import { loginAndFetchFirm } from "../utils/authUtils";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -16,47 +17,21 @@ export default function FirmLogin() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  e.preventDefault();
+  setLoading(true);
+  setMessage("");
 
-    try {
-      // 1️⃣ Supabase Auth login
-      const { data: authData, error: authError } =
-        await supabase.auth.signInWithPassword({ email, password });
+  try {
+    await loginAndFetchFirm(email, password);
 
-      if (authError) throw new Error(authError.message);
-
-      const user = authData.user;
-      if (!user) throw new Error("Invalid login response");
-
-      // 2️⃣ Call Edge Function to fetch firm info
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/login-firm`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ auth_id: user.id }),
-        }
-      );
-
-      const firmData = await res.json();
-      if (!res.ok || !firmData.success) {
-        throw new Error(firmData.error || "Firm lookup failed");
-      }
-
-      // 3️⃣ Save session data
-      sessionStorage.setItem("firm_id", firmData.firm_id);
-      sessionStorage.setItem("paid", firmData.paid);
-
-      setMessage("✅ Login successful! Redirecting...");
-      setTimeout(() => navigate("/dashboard"), 1500);
-    } catch (err) {
-      setMessage("❌ Login failed: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setMessage("✅ Login successful! Redirecting...");
+    setTimeout(() => navigate("/dashboard"), 1500);
+  } catch (err) {
+    setMessage("❌ Login failed: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded shadow">
