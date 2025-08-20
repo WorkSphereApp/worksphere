@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <Header />
-      <main>
+	<main className="pt-20">
         <Home />
       </main>
       <Footer />

@@ -1,5 +1,4 @@
 import React from "react";
-
 import dashboard from "../assets/dashboard.png";
 import staff from "../assets/staff.png";
 import stafflog from "../assets/stafflog.png";
@@ -10,6 +9,8 @@ import mobile from "../assets/mobile.png";
 import reminders from "../assets/reminders.png";
 import register from "../assets/register.png";
 import wareminder from "../assets/wareminder.png";
+import { apiFetch } from "../utils/api";
+import { Link as ScrollLink, Element } from "react-scroll";
 
 const sectionImageClass = "rounded shadow-lg mb-6 object-contain mx-auto";
 const imageSizeClass = "max-w-[1000px] w-full max-h-[600px] h-auto";
@@ -17,46 +18,45 @@ const imageSizeClass = "max-w-[1000px] w-full max-h-[600px] h-auto";
 export default function Home() {
 const handlePayment = async () => {
   try {
-    // 1. Create order
-    const res = await fetch("/api/payment/order", {
+    const firmId = sessionStorage.getItem("firm_id");
+    if (!firmId) {
+  window.location.href = "/#/register";
+  return;
+}
+    // 1. Create Razorpay order via backend
+    const order = await apiFetch("/api/payment/order", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: 1000000 }), // ₹10,000
+      body: JSON.stringify({ firm_id: firmId }),
     });
-
-    if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-    const data = await res.json();
 
     // 2. Razorpay checkout
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: data.amount,
-      currency: data.currency,
+      amount: order.amount,
+      currency: order.currency,
       name: "WorkSphere",
       description: "Lifetime Access",
-      order_id: data.id,
+      order_id: order.id,
       handler: async function (response) {
         try {
           // 3. Verify payment
-          const verifyRes = await fetch("/api/payment/verify", {
+          const verifyRes = await apiFetch("/api/payment/verify", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
+            body: JSON.stringify({
+              ...response,
+              firm_id: firmId,
+            }),
           });
-          const verifyData = await verifyRes.json();
 
-          if (verifyData.success) {
+          if (verifyRes.success) {
             alert("✅ Payment verified! Download starting...");
 
-            // 4. Fetch signed APK download link
-            const firmId = sessionStorage.getItem("firm_id");
-            const apkRes = await fetch(`/api/get-apk-url?firm_id=${firmId}`);
-            const apkData = await apkRes.json();
-
-            if (apkData.url) {
-              window.location.href = apkData.url; // trigger download
+            // 4. Get APK URL
+            const apkRes = await apiFetch(`/api/get-apk-url?firm_id=${firmId}`);
+            if (apkRes.url) {
+              window.location.href = apkRes.url;
             } else {
-              alert("❌ Could not get download link.");
+              alert("❌ Download not available. Contact support.");
             }
           } else {
             alert("❌ Payment verification failed.");
@@ -75,56 +75,46 @@ const handlePayment = async () => {
     alert("Error creating payment order.");
   }
 };
-
- const Section = ({ id, title, emoji, description, children }) => (
-    <section id={id} className="max-w-5xl mx-auto px-6 py-4">
+ 
+const Section = ({ title, emoji, description, children, ...props }) => (
+  <section className="max-w-5xl mx-auto px-6 py-16" {...props}>
+    {title && (
       <h2 className="text-2xl font-bold mb-2">
         {emoji} {title}
       </h2>
+    )}
+    {description && (
       <p className="mb-6 text-gray-700 dark:text-gray-300">{description}</p>
-      {children}
-    </section>
-  );
+    )}
+    {children}
+  </section>
+);
+
+const handleDownload = async () => {
+  const firmId = sessionStorage.getItem("firm_id");
+  if (!firmId) {
+  window.location.href = "/#/login";
+  return;
+}
+  const res = await apiFetch(`/api/get-apk-url?firm_id=${firmId}`);
+  if (res.url) {
+    window.location.href = res.url;
+  } else {
+    alert("⚠ Download not available. Please complete payment.");
+  }
+};
 
   return (
     <div className="font-sans bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
-      {/* HEADER */}
-      <header className="w-full p-4 shadow bg-white dark:bg-gray-900 flex justify-between items-center sticky top-0 z-50">
-        <h1 className="text-2xl text-black-500">All-in-one Staff and Task Management</h1>
-        <nav className="space-x-6 text-sm font-medium">
-  {[
-  "intro",
-  "register",
-  "dashboard",
-  "pricing",
-  "download",
-  "faq",
-].map((link) => (
-  <a
-    key={link}
-    href={`#${link}`}
-    className="hover:text-blue-600 transition-colors"
-  >
-    {link.charAt(0).toUpperCase() + link.slice(1)}
-  </a>
-))}
-</nav>
-      </header>
-
       {/* INTRO */}
-      <section
-        id="intro"
-        className="max-w-5xl mx-auto px-6 py-16 text-center"
-      >
+	<Section id="intro" className="max-w-5xl mx-auto px-6 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">WorkSphere App - All-in-One Staff & Task Management</h1>
         <p className="mb-4 text-lg">A secure, multi-tenant SaaS platform that helps businesses track attendance, manage tasks, and send reminders — all in one place.</p>
         <p className="text-gray-600 dark:text-gray-300">🌍 Trusted by IT firms, marketing agencies, CA offices, consultancies, educational institutions, startups, and HR teams worldwide.</p>
-      </section>
+      </Section>
 
       {/* REGISTER */}
-      <Section
-        id="register"
-        title="Register Your Firm"
+	<Section id="register" title="Register Your Firm"
         emoji="🔧"
         description="The starting point for every new customer. Each firm creates its own secure workspace — all data, staff records, and attendance logs are stored separately for privacy."
       >
@@ -144,11 +134,7 @@ const handlePayment = async () => {
       </Section>
 
       {/* DASHBOARD */}
-      <Section
-        id="dashboard"
-        title="Dashboard"
-        emoji="📊"
-        description="Your command center for business activity. One glance shows you tasks, attendance trends, and staff activity.">
+	<Section id="dashboard" title="Dashboard" emoji="📊" description="Your command center for business activity. One glance shows you tasks, attendance trends, and staff activity.">
 	<h3 className="text-1xl font-bold mb-4">Features:</h3>
         <ul className="list-disc ml-6 mb-6">
           <li>Task Completion Overview → See how many tasks are pending, in progress, or completed.</li>
@@ -170,8 +156,7 @@ const handlePayment = async () => {
       </Section>
 
       {/* STAFF */}
-      <Section
-        id="staff"
+	<Section id="staff"
         title="Manage Staff"
         emoji="👥"
         description="The HR control room — manage your workforce efficiently."
@@ -198,8 +183,8 @@ const handlePayment = async () => {
       </Section>
 
       {/* ATTENDANCE */}
-      <Section
-        id="attendance"
+
+      <Section id="attendance"
         title="Attendance Tracker"
         emoji="⏰"
         description="Real-time attendance & location tracking to keep work hours transparent."
@@ -221,8 +206,8 @@ const handlePayment = async () => {
       </Section>
 
       {/* TASKS */}
-      <Section
-        id="tasks"
+
+      <Section id="tasks"
         title="Task Management"
         emoji="📆"
         description="Assign, monitor, and complete tasks without endless email chains."
@@ -249,8 +234,8 @@ const handlePayment = async () => {
       </Section>
 
       {/* REMINDERS */}
-      <Section
-        id="reminders"
+
+      <Section id="reminders"
         title="Email & WhatsApp Reminders"
         emoji="📤"
         description="Stay connected with smart communication tools built into the app."
@@ -274,11 +259,10 @@ const handlePayment = async () => {
           className={`${sectionImageClass} ${imageSizeClass}`}
         />
       </Section>
-
       {/* PRICING */}
-      <Section
-        id="pricing"
-        title=" Lifetime Access — ₹10,000 One-Time"
+
+      <Section id="pricing"
+        title="Lifetime Access — ₹10,000 One-Time"
         emoji="💳"
         description="Instead of monthly fees, WorkSphere is a one-time investment."
       >
@@ -298,8 +282,8 @@ const handlePayment = async () => {
       </Section>
 
       {/* DOWNLOAD */}
-      <Section
-        id="download"
+
+      <Section id="download"
         title="Multi-Platform Downloads"
         emoji="🏢"
         description="WorkSphere runs on Android, Windows, and Web — access your workspace from anywhere."
@@ -307,20 +291,31 @@ const handlePayment = async () => {
         <ul className="list-disc ml-6 mb-4">
           <li>
   <button
-    onClick={async () => {
-      try {
-        const res = await fetch("/api/get-apk-url");
-        const { url } = await res.json();
-        if (url) window.location.href = url;
-        else alert("Download not available. Please complete payment first.");
-      } catch (err) {
-        alert("Error fetching APK download.");
+  onClick={async () => {
+    try {
+      const firmId = sessionStorage.getItem("firm_id");
+      if (!firmId) {
+        alert("⚠ Please log in first.");
+        return;
       }
-    }}
-    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-  >
-    📱 Download Android APK
-  </button>
+
+      const res = await fetch(`/api/get-apk-url?firm_id=${firmId}`);
+      const { url } = await res.json();
+
+      if (url) {
+        window.location.href = url; // secure download
+      } else {
+        alert("❌ Download not available. Please complete payment first.");
+      }
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Error fetching APK download link.");
+    }
+  }}
+  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+>
+  📱 Download Android APK
+</button>
 </li>
 <li>
   <button
@@ -345,9 +340,9 @@ const handlePayment = async () => {
         </p>
       </Section>
 
-
       {/* FAQ */}
-      <Section id="faq" title="FAQ" emoji="❓">
+
+     <Section id="faq" title="FAQ" emoji="❓">
         <ul className="list-disc ml-6 space-y-2">
           <li>
             <strong>Is this a cloud-based app?</strong> Yes, fully hosted.

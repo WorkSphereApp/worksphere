@@ -17,7 +17,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY // service role for signed URLs
 );
 
-// ✅ Verify Razorpay payment
 app.post("/api/payment/verify", async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, firm_id } = req.body;
@@ -29,26 +28,19 @@ app.post("/api/payment/verify", async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      // Save to Supabase
-      const { error: insertErr } = await supabase
-        .from("firm_payments")
-        .insert([
-          {
-            firm_id,
-            order_id: razorpay_order_id,
-            payment_id: razorpay_payment_id,
-            signature: razorpay_signature,
-            amount: 1000000,
-          },
-        ]);
+      // ✅ Insert into payments table
+      await supabase.from("firm_payments").insert([
+        {
+          firm_id,
+          order_id: razorpay_order_id,
+          payment_id: razorpay_payment_id,
+          signature: razorpay_signature,
+          amount: 1000000,
+        },
+      ]);
 
-      if (insertErr) throw insertErr;
-
-      // Mark firm as paid
-      await supabase
-        .from("firms")
-        .update({ paid: true })
-        .eq("id", firm_id);
+      // ✅ Mark firm as paid
+      await supabase.from("firms").update({ paid: true }).eq("id", firm_id);
 
       return res.json({ success: true, message: "Payment verified & firm marked paid" });
     } else {
@@ -59,9 +51,11 @@ app.post("/api/payment/verify", async (req, res) => {
   }
 });
 
+// backend/index.js
+
 app.get("/api/get-apk-url", async (req, res) => {
   try {
-    const firm_id = req.query.firm_id; // you’ll pass this from frontend
+    const { firm_id } = req.query;
 
     const { data: firm } = await supabase
       .from("firms")
@@ -73,6 +67,7 @@ app.get("/api/get-apk-url", async (req, res) => {
       return res.status(403).json({ error: "Access denied. Please complete payment." });
     }
 
+    // ✅ Generate signed URL for APK (valid 10 minutes)
     const { data, error } = await supabase.storage
       .from("downloads")
       .createSignedUrl("WorkSphere.apk", 600);
@@ -85,7 +80,6 @@ app.get("/api/get-apk-url", async (req, res) => {
   }
 });
 
-
 // ✅ Razorpay client
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -97,11 +91,12 @@ app.get("/", (req, res) => {
   res.send("✅ WorkSphere Backend running!");
 });
 
-// ✅ Payment order creation
+// ✅ Create Razorpay Order
 app.post("/api/payment/order", async (req, res) => {
   try {
+    const { amount } = req.body; // INR in paise, e.g., 1000000 = ₹10,000
     const options = {
-      amount: req.body.amount, // in paise
+      amount,
       currency: "INR",
       receipt: "receipt_" + Date.now(),
     };
@@ -112,10 +107,26 @@ app.post("/api/payment/order", async (req, res) => {
   }
 });
 
+
 // ✅ Secure PWA access route
 app.get("/api/get-pwa-access", async (req, res) => {
   try {
-    // Here you can check firm_id from database to ensure only paid users access PWA
+    const { firm_id } = req.query;
+
+    // Check if firm exists & paid
+    const { data: firm, error } = await supabase
+      .from("firms")
+      .select("paid")
+      .eq("id", firm_id)
+      .single();
+
+    if (error) throw error;
+
+    if (!firm?.paid) {
+      return res.status(403).json({ error: "Access denied. Please complete payment." });
+    }
+
+    // Return hosted PWA URL
     res.json({ url: "https://worksphereapp.onrender.com/" });
   } catch (err) {
     res.status(500).json({ error: err.message });

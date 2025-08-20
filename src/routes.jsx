@@ -1,21 +1,72 @@
-import React from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import App from "./App";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
 import Contact from "./pages/Contact";
+import Refunds from "./pages/Refunds";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import Terms from "./pages/Terms";
-import Refunds from "./pages/Refunds";
+import AppRegistration from "./pages/AppRegistration";
+import FirmLogin from "./pages/FirmLogin";
 
 export default function AppRoutes() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/shipping-policy" element={<ShippingPolicy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/refunds" element={<Refunds />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Layout>
+            <Home />
+          </Layout>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <Layout>
+            <Contact />
+          </Layout>
+        }
+      />
+      <Route
+        path="/refunds"
+        element={
+          <Layout>
+            <Refunds />
+          </Layout>
+        }
+      />
+      <Route
+        path="/shipping-policy"
+        element={
+          <Layout>
+            <ShippingPolicy />
+          </Layout>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <Layout>
+            <Terms />
+          </Layout>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <Layout>
+            <AppRegistration />
+          </Layout>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <Layout>
+            <FirmLogin />
+          </Layout>
+        }
+      />
+    </Routes>
   );
 }
