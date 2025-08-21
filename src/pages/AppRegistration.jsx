@@ -74,10 +74,12 @@ export default function AppRegistration() {
 
      setMessage("✅ Firm created & logged in! Redirecting...");
 setTimeout(() => {
-  scroller.scrollTo("/#/pricing", {
+  // Smooth scroll to Pricing section inside Home.jsx
+  scroller.scrollTo("pricing", {
     duration: 800,
     delay: 0,
-    smooth: "easeInOutQuart"
+    smooth: "easeInOutQuart",
+    offset: -70
   });
 }, 2500);
     } catch (err) {
