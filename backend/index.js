@@ -35,7 +35,7 @@ app.post("/api/payment/verify", async (req, res) => {
           order_id: razorpay_order_id,
           payment_id: razorpay_payment_id,
           signature: razorpay_signature,
-          amount: 10,
+          amount: 100,
         },
       ]);
 
@@ -96,10 +96,12 @@ app.post("/api/payment/order", async (req, res) => {
   try {
     const { firm_id } = req.body;
 
-    const shortFirmId = firm_id.toString().slice(0, 10);
-    const receipt = `r_${shortFirmId}_${Date.now().toString().slice(-6)}`;
+    // Ensure receipt ≤ 40 chars
+    const shortFirmId = firm_id.replace(/-/g, "").slice(0, 12); 
+    const receipt = `rcpt_${shortFirmId}_${Date.now().toString().slice(-8)}`;
+
     const options = {
-      amount: 10,
+      amount: 100,
       currency: "INR",
       receipt
     };
@@ -107,11 +109,14 @@ app.post("/api/payment/order", async (req, res) => {
     const order = await razorpay.orders.create(options);
     res.json(order);
   } catch (err) {
-    console.error("Order creation error:", err);
-    res.status(500).json({ error: err.message });
+    console.error("Order creation error:", {
+      message: err.message,
+      stack: err.stack,
+      full: err
+    });
+    res.status(500).json({ error: err.message, details: err.error });
   }
 });
-
 
 // ✅ Secure PWA access route
 app.get("/api/get-pwa-access", async (req, res) => {

@@ -72,16 +72,58 @@ export default function AppRegistration() {
       // 2️⃣ Auto-login + fetch firm (reuses util)
       await loginAndFetchFirm(form.email, form.password);
 
-     setMessage("✅ Firm created & logged in! Redirecting...");
-setTimeout(() => {
-  // Smooth scroll to Pricing section inside Home.jsx
-  scroller.scrollTo("pricing", {
-    duration: 800,
-    delay: 0,
-    smooth: "easeInOutQuart",
-    offset: -70
-  });
-}, 2500);
+     setMessage("✅ Firm created & logged in! Redirecting to payment...");
+
+// Call backend to create Razorpay order
+const orderRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/order`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ firm_id: data.firm_id }) // send firm_id
+});
+
+const order = await orderRes.json();
+if (!order.id) throw new Error(order.error || "Failed to create order");
+
+// Open Razorpay Checkout
+const options = {
+  key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+  amount: order.amount,
+  currency: order.currency,
+  name: "WorkSphere Lifetime Access",
+  description: "One-time payment for ₹10,000",
+  order_id: order.id,
+  handler: async function (response) {
+    // Verify payment
+    const verifyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...response,
+        firm_id: data.firm_id
+      })
+    });
+
+    const verifyData = await verifyRes.json();
+    if (verifyData.success) {
+      // ✅ Fetch APK URL
+      const apkRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/get-apk-url?firm_id=${data.firm_id}`);
+      const apk = await apkRes.json();
+      if (apk.url) {
+        window.location.href = apk.url; // redirect to APK download
+      }
+    } else {
+      alert("Payment verification failed. Please contact support.");
+    }
+  },
+  prefill: {
+    name: form.founderName,
+    email: form.email,
+    contact: form.phone
+  },
+  theme: { color: "#3399cc" }
+};
+
+new window.Razorpay(options).open();
     } catch (err) {
       setMessage("❌ " + err.message);
     } finally {
