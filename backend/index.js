@@ -95,18 +95,24 @@ app.get("/", (req, res) => {
 app.post("/api/payment/order", async (req, res) => {
   try {
     const { firm_id } = req.body;
+
+    // Ensure receipt ≤ 40 chars
+    const shortFirmId = firm_id.replace(/-/g, "").slice(0, 12); 
+    const receipt = `rcpt_${shortFirmId}_${Date.now().toString().slice(-8)}`;
+
     const options = {
       amount: 1000000, // ₹10,000 in paise
       currency: "INR",
-      receipt: `receipt_${firm_id}_${Date.now()}`
+      receipt
     };
+
     const order = await razorpay.orders.create(options);
     res.json(order);
   } catch (err) {
     console.error("Order creation error:", {
       message: err.message,
       stack: err.stack,
-      full: err // 👈 log full object Razorpay returns
+      full: err
     });
     res.status(500).json({ error: err.message, details: err.error });
   }

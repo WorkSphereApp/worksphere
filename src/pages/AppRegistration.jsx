@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAndFetchFirm } from "../utils/authUtils";
+import { scroller } from "react-scroll";
 
 export default function AppRegistration() {
   const navigate = useNavigate();
@@ -71,8 +72,14 @@ export default function AppRegistration() {
       // 2️⃣ Auto-login + fetch firm (reuses util)
       await loginAndFetchFirm(form.email, form.password);
 
-      setMessage("✅ Firm created & logged in! Redirecting...");
-      setTimeout(() => navigate("/dashboard"), 2500);
+     setMessage("✅ Firm created & logged in! Redirecting...");
+setTimeout(() => {
+  scroller.scrollTo("/pricing", {
+    duration: 800,
+    delay: 0,
+    smooth: "easeInOutQuart"
+  });
+}, 2500);
     } catch (err) {
       setMessage("❌ " + err.message);
     } finally {
