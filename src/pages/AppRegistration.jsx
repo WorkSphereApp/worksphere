@@ -74,7 +74,7 @@ export default function AppRegistration() {
 
      setMessage("✅ Firm created & logged in! Redirecting...");
 setTimeout(() => {
-  scroller.scrollTo("/pricing", {
+  scroller.scrollTo("/#/pricing", {
     duration: 800,
     delay: 0,
     smooth: "easeInOutQuart"

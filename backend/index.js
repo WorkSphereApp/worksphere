@@ -35,7 +35,7 @@ app.post("/api/payment/verify", async (req, res) => {
           order_id: razorpay_order_id,
           payment_id: razorpay_payment_id,
           signature: razorpay_signature,
-          amount: 1000000,
+          amount: 10,
         },
       ]);
 
@@ -97,14 +97,13 @@ app.post("/api/payment/order", async (req, res) => {
     const { firm_id } = req.body;
 
     // Ensure receipt ≤ 40 chars
-    const shortFirmId = firm_id.replace(/-/g, "").slice(0, 12); 
-    const receipt = `rcpt_${shortFirmId}_${Date.now().toString().slice(-8)}`;
-
+    const shortFirmId = firm_id.toString().slice(0, 10); // max 10 chars
+    const receipt = `r_${shortFirmId}_${Date.now().toString().slice(-6)}`; // <= 40
     const options = {
-      amount: 1000000, // ₹10,000 in paise
+      amount: 10,
       currency: "INR",
       receipt
-    };
+   };
 
     const order = await razorpay.orders.create(options);
     res.json(order);
