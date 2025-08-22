@@ -132,7 +132,7 @@ new window.Razorpay(options).open();
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded shadow">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded shadow pt-20">
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
         Register Your Firm
       </h2>

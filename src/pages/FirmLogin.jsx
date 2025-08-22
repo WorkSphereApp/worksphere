@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { loginAndFetchFirm } from "../utils/authUtils";
 
+
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -25,7 +26,7 @@ export default function FirmLogin() {
     await loginAndFetchFirm(email, password);
 
     setMessage("✅ Login successful! Redirecting...");
-    setTimeout(() => navigate("/dashboard"), 1500);
+    setTimeout(() => navigate("/#/dashboard"), 1500);
   } catch (err) {
     setMessage("❌ Login failed: " + err.message);
   } finally {
@@ -34,7 +35,7 @@ export default function FirmLogin() {
 };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded shadow">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded shadow pt-20">
       <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
         Firm Login
       </h2>

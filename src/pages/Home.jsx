@@ -10,9 +10,10 @@ import reminders from "../assets/reminders.png";
 import register from "../assets/register.png";
 import wareminder from "../assets/wareminder.png";
 import { apiFetch } from "../utils/api";
+import { Link } from "react-router-dom";
 import { Link as ScrollLink, Element } from "react-scroll";
 
-const sectionImageClass = "rounded shadow-lg mb-6 object-contain mx-auto";
+const sectionImageClass = "rounded-2xl shadow-xl hover:scale-105 hover:shadow-2xl transition-transform duration-300 mb-6 object-contain mx-auto";
 const imageSizeClass = "max-w-[1000px] w-full max-h-[600px] h-auto";
 
 export default function Home() {
@@ -105,14 +106,22 @@ const handleDownload = async () => {
 };
 
   return (
-    <div className="font-sans bg-white text-gray-800 dark:bg-gray-900 dark:text-white">
+     <div className="font-sans bg-white text-gray-800 dark:bg-gray-900 dark:text-white pt-10">
       {/* INTRO */}
 	<Section id="intro" className="max-w-5xl mx-auto px-6 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">WorkSphere App - All-in-One Staff & Task Management</h1>
         <p className="mb-4 text-lg">A secure, multi-tenant SaaS platform that helps businesses track attendance, manage tasks, and send reminders — all in one place.</p>
-        <p className="text-gray-600 dark:text-gray-300">🌍 Trusted by IT firms, marketing agencies, CA offices, consultancies, educational institutions, startups, and HR teams worldwide.</p>
-      </Section>
-
+        <p className="text-gray-600 dark:text-gray-300">🌍 Trusted by IT firms, marketing agencies, CA offices, consultancies, educational institutions, startups, and HR teams worldwide.</p> <br/>
+<div className="space-x-4">
+  <Link to="/login" className="bg-gray-100 text-blue-700 px-6 py-3 rounded-lg shadow hover:bg-gray-200">
+    Firm Login
+  </Link>
+  <Link to="/register" className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700">
+    Register Firm
+  </Link>
+</div>
+	</Section>
+	
       {/* REGISTER */}
 	<Section id="register" title="Register Your Firm"
         emoji="🔧"
@@ -334,7 +343,7 @@ const handleDownload = async () => {
         alert("Error fetching PWA link.");
       }
     }}
-    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+    className="bg-green-600 text-white px-4 py-2 mt-2 rounded hover:bg-green-700"
   >
     🌐 Open PWA (Web/Desktop/iOS)
   </button>
@@ -343,6 +352,40 @@ const handleDownload = async () => {
         <p className="italic text-yellow-500">
           Web version will be available only to paid firms.
         </p>
+<p className="mt-6 text-lg font-bold">📖 How to Install the PWA</p>
+<div className="text-gray-700 dark:text-gray-300 space-y-4 mt-4">
+  <div>
+    <h4 className="font-semibold">🖥️ Desktop (Windows/Mac/Linux)</h4>
+    <ol className="list-decimal ml-6">
+      <li>Open the app in Chrome or Edge browser.</li>
+      <li>Click the <strong>Install</strong> or <strong>+ icon</strong> in the address bar.</li>
+      <li>Confirm install → App opens in its own window like native software.</li>
+    </ol>
+  </div>
+
+  <div>
+    <h4 className="font-semibold">📱 Android</h4>
+    <ol className="list-decimal ml-6">
+      <li>Open the app link in Chrome browser.</li>
+      <li>Tap the 3-dot menu → <strong>Install App / Add to Home Screen</strong>.</li>
+      <li>The app icon appears on your home screen. Launch it like any other app.</li>
+    </ol>
+  </div>
+
+  <div>
+    <h4 className="font-semibold">🍏 iOS (iPhone/iPad)</h4>
+    <ol className="list-decimal ml-6">
+      <li>Open the app in Safari browser.</li>
+      <li>Tap the <strong>Share</strong> button → scroll → <strong>Add to Home Screen</strong>.</li>
+      <li>The app installs to your home screen. Tap it to open in full screen.</li>
+    </ol>
+  </div>
+
+  <div>
+    <h4 className="font-semibold">💻 Other Devices</h4>
+    <p>If your browser supports PWA (Brave, Firefox Nightly, Opera etc.), look for <strong>Install</strong> or <strong>Add to Home Screen</strong> option in the browser menu.</p>
+  </div>
+</div>
       </Section>
 
       {/* FAQ */}
@@ -359,8 +402,7 @@ const handleDownload = async () => {
             <strong>Is my firm's data private?</strong> Yes, 100% isolated by firm ID.
           </li>
           <li>
-            <strong>Is this free?</strong> No, ₹10,000 one-time payment per
-            firm.
+            <strong>Is this free?</strong> No, ₹7,500 one-time payment per firm.
           </li>
         </ul>
       </Section>

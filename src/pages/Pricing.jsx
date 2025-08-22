@@ -52,7 +52,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-8 pt-20">
       <h2 className="text-2xl font-bold mb-4">Lifetime Access — ₹10,000 One-Time</h2>
       <button
         onClick={handlePayment}

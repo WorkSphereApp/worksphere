@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ShippingPolicy() {
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
+    <div className="max-w-3xl mx-auto px-6 py-16 pt-20">
       <h1 className="text-3xl font-bold mb-6">Shipping Policy</h1>
       <p className="mb-4">
         Since WorkSphere is a digital software service, there are no physical
