@@ -321,7 +321,12 @@ const handleDownload = async () => {
   <button
     onClick={async () => {
       try {
-        const res = await apiFetch(`/api/get-pwa-access?firm_id=${firmId}`);
+        const firmId = sessionStorage.getItem("firm_id");
+	if (!firmId) {
+	  alert("⚠ Please log in first.");
+	  return;
+	}
+	const res = await apiFetch(`/api/get-pwa-access?firm_id=${firmId}`);
 	const { url } = res;
         if (url) window.location.href = url;
         else alert("PWA access locked. Please complete payment first.");
@@ -351,8 +356,7 @@ const handleDownload = async () => {
             <strong>Do you support dark mode?</strong> Yes.
           </li>
           <li>
-            <strong>Is my firm's data private?</strong> Yes, 100% isolated by
-            firm ID.
+            <strong>Is my firm's data private?</strong> Yes, 100% isolated by firm ID.
           </li>
           <li>
             <strong>Is this free?</strong> No, ₹10,000 one-time payment per

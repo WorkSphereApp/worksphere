@@ -57,17 +57,17 @@ app.get("/api/get-apk-url", async (req, res) => {
   try {
     const { firm_id } = req.query;
 
-    const { data: firm } = await supabase
+    const { data: firm, error: firmError } = await supabase
       .from("firms")
       .select("paid")
       .eq("id", firm_id)
       .single();
 
+    if (firmError) throw firmError;
     if (!firm?.paid) {
       return res.status(403).json({ error: "Access denied. Please complete payment." });
     }
 
-    // ✅ Generate signed URL for APK (valid 10 minutes)
     const { data, error } = await supabase.storage
       .from("downloads")
       .createSignedUrl("WorkSphere.apk", 600);
@@ -76,6 +76,7 @@ app.get("/api/get-apk-url", async (req, res) => {
 
     res.json({ url: data.signedUrl });
   } catch (err) {
+    console.error("APK URL Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
