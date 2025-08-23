@@ -402,7 +402,7 @@ const handleDownload = async () => {
             <strong>Is my firm's data private?</strong> Yes, 100% isolated by firm ID.
           </li>
           <li>
-            <strong>Is this free?</strong> No, ₹7,500 one-time payment per firm.
+            <strong>Is this free?</strong> No, ₹10,000 one-time payment per firm.
           </li>
         </ul>
       </Section>

@@ -35,7 +35,7 @@ app.post("/api/payment/verify", async (req, res) => {
           order_id: razorpay_order_id,
           payment_id: razorpay_payment_id,
           signature: razorpay_signature,
-          amount: 100,
+          amount: 1000000,
         },
       ]);
 
@@ -102,7 +102,7 @@ app.post("/api/payment/order", async (req, res) => {
     const receipt = `rcpt_${shortFirmId}_${Date.now().toString().slice(-8)}`;
 
     const options = {
-      amount: 100,
+      amount: 1000000,
       currency: "INR",
       receipt
     };
