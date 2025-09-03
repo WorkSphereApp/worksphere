@@ -58,7 +58,7 @@ export default function Pricing() {
         onClick={handlePayment}
         className="bg-green-600 text-white px-6 py-3 rounded-lg"
       >
-        💳 Pay ₹10,000 — Lifetime Access
+        💳 Pay ₹5,000 — Lifetime Access
       </button>
     </div>
   );

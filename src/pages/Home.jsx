@@ -271,7 +271,7 @@ const handleDownload = async () => {
       {/* PRICING */}
 
       <Section id="pricing"
-        title="Lifetime Access — ₹10,000 One-Time"
+        title="Lifetime Access — ₹5,000 One-Time"
         emoji="💳"
         description="Instead of monthly fees, WorkSphere is a one-time investment."
       >
@@ -281,10 +281,10 @@ const handleDownload = async () => {
           <li>No user limit for your firm.</li>
           <li>Free updates and improvements.</li>
         </ul>
-        <p className="mb-6 text-center">₹10,000 one-time payment per firm</p>
+        <p className="mb-6 text-center">₹5,000 one-time payment per firm</p>
         <button
           onClick={handlePayment}
-          className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2 mx-auto">💳 Pay ₹10,000 — Lifetime Access</button>
+          className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2 mx-auto">💳 Pay ₹5,000 — Lifetime Access</button>
         <p className="mt-3 text-sm text-center text-gray-500">
           * Secure payments powered by Razorpay
         </p>

@@ -37,7 +37,7 @@ export default function PaymentButton() {
 
   return (
     <button onClick={handlePayment} className="bg-blue-500 text-white px-4 py-2">
-      Pay ₹10,000
+      Pay ₹5,000
     </button>
   );
 }
