@@ -110,8 +110,15 @@ const handleDownload = async () => {
       {/* INTRO */}
 	<Section id="intro" className="max-w-5xl mx-auto px-6 py-16 text-center">
         <h1 className="text-4xl font-bold mb-4">WorkSphere App - All-in-One Staff & Task Management</h1>
-        <p className="mb-4 text-lg">A secure, multi-tenant SaaS platform that helps businesses track attendance, manage tasks, and send reminders — all in one place.</p>
-        <p className="text-gray-600 dark:text-gray-300">🌍 Trusted by IT firms, marketing agencies, CA offices, consultancies, educational institutions, startups, and HR teams worldwide.</p> <br/>
+        <p className="mb-4 text-lg">A secure, multi-tenant SaaS platform that helps businesses track attendance, manage tasks, and send reminders — all in one place. </p>
+        <p className="text-gray-600 dark:text-gray-300">
+  🌍 Trusted by IT firms, marketing agencies, CA offices, consultancies, educational institutions, and startups.  
+  WorkSphere is the best <strong>HR Software India</strong> solution for SMEs — 
+  a modern <strong>attendance app for SMEs</strong>, 
+  <strong>employee management system India</strong>, and 
+  <strong>staff tracking software</strong> all in one.  
+  Perfect for small and medium businesses looking for an affordable, one-time HR software.
+</p> <br/>
 <div className="space-x-4">
   <Link to="/login" className="bg-gray-100 text-blue-700 px-6 py-3 rounded-lg shadow hover:bg-gray-200">
     Firm Login
