@@ -444,7 +444,7 @@ const handleDownload = async () => {
             <li>₹700/month for task tracking</li>
           </ul>
           <p className="mt-3">= ₹26,400/year wasted.</p>
-          <p className="mt-3">✅ WorkSphere solves this with a one-time ₹10,000 fee → lifetime access. No recurring costs, no per-user pricing. Perfect for SMEs that need predictability and savings.</p>
+          <p className="mt-3">✅ WorkSphere solves this with a one-time ₹5,000 fee → lifetime access. No recurring costs, no per-user pricing. Perfect for SMEs that need predictability and savings.</p>
         </div>
 
         {/* Blog 3 */}
