@@ -406,6 +406,56 @@ const handleDownload = async () => {
           </li>
         </ul>
       </Section>
+	{/* BLOGS */}
+      <Section id="blog" title="📖 Blog" emoji="📰" description="Insights for SMEs — learn how to save money, manage staff better, and choose the right HR tools.">
+        
+        {/* Blog 1 */}
+        <div className="mb-10">
+          <h3 className="text-xl font-bold mb-2">Top 5 HR Tools for SMEs in India (2025)</h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            Small and medium enterprises (SMEs) in India face unique HR challenges — limited budgets, high staff turnover, and the need for simple tools. Here are the top 5 HR tools SMEs should consider in 2025:
+          </p>
+          <ul className="list-disc ml-6 mt-3">
+            <li>WorkSphere App – Affordable one-time lifetime HR software for attendance, staff, and tasks.</li>
+            <li>Zoho People – Subscription-based HR management system.</li>
+            <li>Keka – Payroll + HR solution popular with growing companies.</li>
+            <li>greytHR – Employee payroll & compliance tool for Indian firms.</li>
+            <li>Darwinbox – Advanced HR suite for enterprises, also adopted by some SMEs.</li>
+          </ul>
+          <p className="mt-3">👉 If you want a budget-friendly HR tool that covers attendance, staff records, and tasks in one place, WorkSphere is the only one-time payment solution in India.</p>
+        </div>
+
+        {/* Blog 2 */}
+        <div className="mb-10">
+          <h3 className="text-xl font-bold mb-2">Why SMEs Waste Money on SaaS Subscriptions</h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            Most SMEs sign up for multiple SaaS tools — one for HR, another for tasks, another for reminders. Monthly fees add up quickly. For example:
+          </p>
+          <ul className="list-disc ml-6 mt-3">
+            <li>₹1,000/month for HR</li>
+            <li>₹500/month for attendance</li>
+            <li>₹700/month for task tracking</li>
+          </ul>
+          <p className="mt-3">= ₹26,400/year wasted.</p>
+          <p className="mt-3">✅ WorkSphere solves this with a one-time ₹10,000 fee → lifetime access. No recurring costs, no per-user pricing. Perfect for SMEs that need predictability and savings.</p>
+        </div>
+
+        {/* Blog 3 */}
+        <div className="mb-10">
+          <h3 className="text-xl font-bold mb-2">How to Manage Attendance & Staff in One App</h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            Managing attendance and staff records is often messy for SMEs. WorkSphere combines everything:
+          </p>
+          <ul className="list-disc ml-6 mt-3">
+            <li>Staff profiles with photos & departments</li>
+            <li>Attendance log (sign in, lunch breaks, sign off)</li>
+            <li>Export reports in PDF/Excel</li>
+            <li>Assign & track tasks</li>
+            <li>Automated reminders via Email & WhatsApp</li>
+          </ul>
+          <p className="mt-3">👉 No switching between Excel sheets and WhatsApp groups. One login, one app, one-time cost.</p>
+        </div>
+      </Section>
     </div>
   );
 }
