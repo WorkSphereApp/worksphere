@@ -7,7 +7,7 @@ import logo from "../assets/logo.png";
 
 const sections = [
   "intro", "register", "dashboard", "staff", "attendance",
-  "tasks", "reminders", "pricing", "download", "faq"
+  "tasks", "reminders", "pricing", "download", "faq", "blog"
 ];
 
 export default function Header() {
